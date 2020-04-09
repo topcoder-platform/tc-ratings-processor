@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 UPDATE_CACHE=""
-docker-compose -f docker/docker-compose.yml build legacy-submission-processor
-docker create --name app legacy-submission-processor:latest
+docker-compose -f docker/docker-compose.yml build tc-ratings-processor
+docker create --name app tc-ratings-processor:latest
 
 if [ -d node_modules ]
 then
