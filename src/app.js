@@ -20,28 +20,31 @@ const consumer = new Kafka.GroupConsumer(helper.getKafkaOptions())
  * Whenever a new message is received by Kafka consumer,
  * this function will be invoked
  */
-const dataHandler = (messageSet, topic, partition) => Promise.each(messageSet, (m) => {
-  const message = m.message.value ? m.message.value.toString('utf8') : null
-  logger.info(`Handle Kafka event message; Topic: ${topic}; Partition: ${partition}; Offset: ${m.offset}; Message: ${message}.`)
-  let messageJSON
-  try {
-    messageJSON = JSON.parse(message)
-  } catch (e) {
-    logger.error('Invalid message JSON.')
-    logger.logFullError(e)
-    return
-  }
+const dataHandler = (messageSet, topic, partition) =>
+  Promise.each(messageSet, (m) => {
+    const message = m.message.value ? m.message.value.toString('utf8') : null
+    logger.info(
+      `Handle Kafka event message; Topic: ${topic}; Partition: ${partition}; Offset: ${m.offset}; Message: ${message}.`
+    )
+    let messageJSON
+    try {
+      messageJSON = JSON.parse(message)
+    } catch (e) {
+      logger.error('Invalid message JSON.')
+      logger.logFullError(e)
+      return
+    }
 
-  return ProcessorService.processMessage(messageJSON)
-    .then(() => {
-      logger.debug('Successfully processed message')
-      consumer.commitOffset({ topic, partition, offset: m.offset })
-    })
-    .catch((err) => {
-      logger.logFullError(err)
-      consumer.commitOffset({ topic, partition, offset: m.offset })
-    })
-})
+    return ProcessorService.processMessage(messageJSON)
+      .then(() => {
+        logger.debug('Successfully processed message')
+        consumer.commitOffset({ topic, partition, offset: m.offset })
+      })
+      .catch((err) => {
+        logger.logFullError(err)
+        consumer.commitOffset({ topic, partition, offset: m.offset })
+      })
+  })
 
 // check if there is kafka connection alive
 const check = () => {
@@ -49,7 +52,7 @@ const check = () => {
     return false
   }
   let connected = true
-  consumer.client.initialBrokers.forEach(conn => {
+  consumer.client.initialBrokers.forEach((conn) => {
     logger.debug(`url ${conn.server()} - connected=${conn.connected}`)
     connected = conn.connected & connected
   })
@@ -63,10 +66,12 @@ const topics = [
 ]
 
 consumer
-  .init([{
-    subscriptions: topics,
-    handler: dataHandler
-  }])
+  .init([
+    {
+      subscriptions: topics,
+      handler: dataHandler
+    }
+  ])
   // fetch ignored review types
   .then(() => helper.fetchIgnoredReviewTypes())
   // consume configured topics

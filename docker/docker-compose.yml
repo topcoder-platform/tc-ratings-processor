@@ -1,11 +1,8 @@
 version: '3'
 services:
-  legacy-rating-processor:
-    image: legacy-rating-processor:latest
+  tc-ratings-processor:
+    image: tc-ratings-processor:latest
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    env_file:
-      - api.env
     network_mode: "host"
-    command: run start

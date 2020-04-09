@@ -15,14 +15,18 @@ module.exports = {
   KAFKA_GROUP_ID: process.env.KAFKA_GROUP_ID || 'legacy-rating-processor',
 
   // Kafka topics to be listened
-  CHALLENGE_NOTIFICATION_EVENTS_TOPIC: process.env.CHALLENGE_NOTIFICATION_EVENTS_TOPIC || 'challenge.notification.events',
-  SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC: process.env.SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC || 'submission.notification.aggregate',
-  NOTIFICATION_AUTOPILOT_EVENTS_TOPIC: process.env.NOTIFICATION_AUTOPILOT_EVENTS_TOPIC || 'notifications.autopilot.events',
+  CHALLENGE_NOTIFICATION_EVENTS_TOPIC:
+    process.env.CHALLENGE_NOTIFICATION_EVENTS_TOPIC || 'challenge.notification.events',
+  SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC:
+    process.env.SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC || 'submission.notification.aggregate',
+  NOTIFICATION_AUTOPILOT_EVENTS_TOPIC:
+    process.env.NOTIFICATION_AUTOPILOT_EVENTS_TOPIC || 'notifications.autopilot.events',
 
   // submission notification create topic
-  SUBMISSION_NOTIFICAION_CREATE_TOPIC: process.env.SUBMISSION_NOTIFICAION_CREATE_TOPIC || 'submission.notification.create',
+  SUBMISSION_NOTIFICAION_CREATE_TOPIC:
+    process.env.SUBMISSION_NOTIFICAION_CREATE_TOPIC || 'submission.notification.create',
 
-  IGNORED_REVIEW_TYPES: process.env.IGNORED_REVIEW_TYPES || '["AV Scan"]',
+  IGNORED_REVIEW_TYPES: process.env.IGNORED_REVIEW_TYPES || '["Virus Scan"]',
 
   AUTH0_URL: process.env.AUTH0_URL,
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,

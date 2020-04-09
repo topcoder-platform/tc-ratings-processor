@@ -15,8 +15,17 @@ const InformixService = require('./InformixService')
 
 const idGen = new IDGenerator(config.ID_SEQ_COMPONENT_STATE)
 
-const submissionApiClient = submissionApi(_.pick(config, [
-  'AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL', 'AUTH0_PROXY_SERVER_URL']))
+const submissionApiClient = submissionApi(
+  _.pick(config, [
+    'AUTH0_URL',
+    'AUTH0_AUDIENCE',
+    'TOKEN_CACHE_TIME',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'SUBMISSION_API_URL',
+    'AUTH0_PROXY_SERVER_URL'
+  ])
+)
 
 const timeZone = 'America/New_York'
 
@@ -25,7 +34,7 @@ const timeZone = 'America/New_York'
  *
  * @param {Object} payload The registration event payload.
  */
-async function processRegistration (payload) {
+async function processRegistration(payload) {
   logger.info('Process Marathon Match registration event.')
 
   // informix database connection
@@ -80,12 +89,15 @@ async function processRegistration (payload) {
 }
 
 processRegistration.schema = {
-  payload: Joi.object().keys({
-    data: Joi.object().keys({
-      challengeId: Joi.id().required(),
-      userId: Joi.id().required()
+  payload: Joi.object()
+    .keys({
+      data: Joi.object().keys({
+        challengeId: Joi.id().required(),
+        userId: Joi.id().required()
+      })
     })
-  }).unknown(true).required()
+    .unknown(true)
+    .required()
 }
 
 /**
@@ -93,7 +105,7 @@ processRegistration.schema = {
  *
  * @param {Object} payload The review event payload.
  */
-async function processReview (payload) {
+async function processReview(payload) {
   logger.info('Process Marathon Match review event.')
 
   const ignoredIds = helper.getIgnoredReviewTypeIds()
@@ -128,7 +140,11 @@ async function processReview (payload) {
   try {
     const roundId = await InformixService.getMMRoundId(connection, challengeId)
     if (roundId) {
-      const { longComponentStateId, submissionNumber } = await InformixService.getLongComponentStateDetail(connection, roundId, memberId)
+      const { longComponentStateId, submissionNumber } = await InformixService.getLongComponentStateDetail(
+        connection,
+        roundId,
+        memberId
+      )
 
       await InformixService.insertRecord(connection, 'long_submission', {
         long_component_state_id: longComponentStateId,
@@ -140,12 +156,17 @@ async function processReview (payload) {
         language_id: 9
       })
 
-      await InformixService.updateRecord(connection, 'long_component_state', {
-        points: payload.score,
-        submission_number: submissionNumber + 1
-      }, {
-        long_component_state_id: longComponentStateId
-      })
+      await InformixService.updateRecord(
+        connection,
+        'long_component_state',
+        {
+          points: payload.score,
+          submission_number: submissionNumber + 1
+        },
+        {
+          long_component_state_id: longComponentStateId
+        }
+      )
 
       await connection.commitTransactionAsync()
 
@@ -163,11 +184,14 @@ async function processReview (payload) {
 }
 
 processReview.schema = {
-  payload: Joi.object().keys({
-    submissionId: Joi.sid().required(),
-    typeId: Joi.sid().required(),
-    score: Joi.number().required()
-  }).unknown(true).required()
+  payload: Joi.object()
+    .keys({
+      submissionId: Joi.sid().required(),
+      typeId: Joi.sid().required(),
+      score: Joi.number().required()
+    })
+    .unknown(true)
+    .required()
 }
 
 /**
@@ -175,7 +199,7 @@ processReview.schema = {
  *
  * @param {Object} payload The review summation event payload.
  */
-async function processReviewSummation (payload) {
+async function processReviewSummation(payload) {
   logger.info('Process Marathon Match review summation event.')
 
   let submissionRes
@@ -206,14 +230,19 @@ async function processReviewSummation (payload) {
     if (roundId) {
       const initialScore = await InformixService.getSubmissionInitialScore(connection, legacySubmissionId)
 
-      await InformixService.updateRecord(connection, 'long_comp_result', {
-        system_point_total: payload.aggregateScore,
-        point_total: initialScore,
-        attended: 'Y'
-      }, {
-        round_id: roundId,
-        coder_id: memberId
-      })
+      await InformixService.updateRecord(
+        connection,
+        'long_comp_result',
+        {
+          system_point_total: payload.aggregateScore,
+          point_total: initialScore,
+          attended: 'Y'
+        },
+        {
+          round_id: roundId,
+          coder_id: memberId
+        }
+      )
 
       await connection.commitTransactionAsync()
 
@@ -231,10 +260,13 @@ async function processReviewSummation (payload) {
 }
 
 processReviewSummation.schema = {
-  payload: Joi.object().keys({
-    submissionId: Joi.sid().required(),
-    aggregateScore: Joi.number().required()
-  }).unknown(true).required()
+  payload: Joi.object()
+    .keys({
+      submissionId: Joi.sid().required(),
+      aggregateScore: Joi.number().required()
+    })
+    .unknown(true)
+    .required()
 }
 
 /**
@@ -242,7 +274,7 @@ processReviewSummation.schema = {
  *
  * @param {Object} payload The review end event payload.
  */
-async function processReviewEnd (payload) {
+async function processReviewEnd(payload) {
   if (payload.phaseTypeName === 'Review' && payload.state === 'End') {
     // informix database connection
     const connection = await helper.getInformixConnection()
@@ -263,14 +295,19 @@ async function processReviewEnd (payload) {
 
           const { rating, vol } = await InformixService.getUserMMRating(connection, result[i].coderId)
 
-          await InformixService.updateRecord(connection, 'long_comp_result', {
-            placed: result[i].placed,
-            old_rating: rating,
-            old_vol: vol
-          }, {
-            round_id: roundId,
-            coder_id: result[i].coderId
-          })
+          await InformixService.updateRecord(
+            connection,
+            'long_comp_result',
+            {
+              placed: result[i].placed,
+              old_rating: rating,
+              old_vol: vol
+            },
+            {
+              round_id: roundId,
+              coder_id: result[i].coderId
+            }
+          )
         }
 
         await connection.commitTransactionAsync()
@@ -292,18 +329,21 @@ async function processReviewEnd (payload) {
 }
 
 processReviewEnd.schema = {
-  payload: Joi.object().keys({
-    projectId: Joi.id().required(),
-    phaseTypeName: Joi.string().required(),
-    state: Joi.string().required()
-  }).unknown(true).required()
+  payload: Joi.object()
+    .keys({
+      projectId: Joi.id().required(),
+      phaseTypeName: Joi.string().required(),
+      state: Joi.string().required()
+    })
+    .unknown(true)
+    .required()
 }
 
 /**
  * Process the Kafka message
  * @param {Object} message the kafka message
  */
-async function processMessage (message) {
+async function processMessage(message) {
   if (message.topic === config.CHALLENGE_NOTIFICATION_EVENTS_TOPIC) {
     if (message.payload.type === 'USER_REGISTRATION') {
       await this.processRegistration(message.payload)
@@ -312,13 +352,13 @@ async function processMessage (message) {
     }
   } else if (message.topic === config.SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC) {
     if (message.payload.originalTopic !== config.SUBMISSION_NOTIFICAION_CREATE_TOPIC) {
-      logger.info('Ignore this event, originalTopic doesn\'t match')
+      logger.info("Ignore this event, originalTopic doesn't match")
     } else if (message.payload.resource === constants.resources.review) {
       await this.processReview(message.payload)
     } else if (message.payload.resource === constants.resources.reviewSummation) {
       await this.processReviewSummation(message.payload)
     } else {
-      logger.info('Ignore this event, resource doesn\'t match')
+      logger.info("Ignore this event, resource doesn't match")
     }
   } else {
     await this.processReviewEnd(message.payload)
@@ -326,13 +366,15 @@ async function processMessage (message) {
 }
 
 processMessage.schema = {
-  message: Joi.object().keys({
-    topic: Joi.string().required(),
-    originator: Joi.string().required(),
-    timestamp: Joi.date().required(),
-    'mime-type': Joi.string().required(),
-    payload: Joi.object().required()
-  }).required()
+  message: Joi.object()
+    .keys({
+      topic: Joi.string().required(),
+      originator: Joi.string().required(),
+      timestamp: Joi.date().required(),
+      'mime-type': Joi.string().required(),
+      payload: Joi.object().required()
+    })
+    .required()
 }
 
 module.exports = {

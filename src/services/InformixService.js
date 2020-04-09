@@ -6,7 +6,8 @@ const _ = require('lodash')
 const util = require('util')
 
 // The query to get MM challenge round id
-const GET_MMCHALLENGE_ROUND_ID_QUERY = 'select value from tcs_catalog:project_info where project_info_type_id = 56 and project_id = %d'
+const GET_MMCHALLENGE_ROUND_ID_QUERY =
+  'select value from tcs_catalog:project_info where project_info_type_id = 56 and project_id = %d'
 
 // The query to get component id
 const GET_COMPONENT_ID_QUERY = 'select component_id from round_component where round_id = %d'
@@ -22,7 +23,8 @@ const GET_LONG_COMPONENT_STATE_QUERY = `select long_component_state_id, submissi
 const GET_SUBMISSION_INITIAL_SCORE_QUERY = 'select initial_score from tcs_catalog:submission where submission_id = %d'
 
 // The query to get mm challenge result
-const GET_MM_RESULT_QUERY = 'select system_point_total as point, coder_id, attended from long_comp_result where round_id = %d'
+const GET_MM_RESULT_QUERY =
+  'select system_point_total as point, coder_id, attended from long_comp_result where round_id = %d'
 
 // The query to get user mm rating
 const GET_USER_MM_RATING_QUERY = 'select rating, vol from algo_rating where coder_id = %d and algo_rating_type_id = 3'
@@ -33,7 +35,7 @@ const GET_USER_MM_RATING_QUERY = 'select rating, vol from algo_rating where code
  * @param {String} sql the sql
  * @return {Object} Informix statement
  */
-async function prepare (connection, sql) {
+async function prepare(connection, sql) {
   const stmt = await connection.prepareAsync(sql)
   return Promise.promisifyAll(stmt)
 }
@@ -44,12 +46,15 @@ async function prepare (connection, sql) {
  * @param {String} tableName the table name
  * @param {Object} columnValues the column key-value map
  */
-async function insertRecord (connection, tableName, columnValues) {
+async function insertRecord(connection, tableName, columnValues) {
   const normalizedColumnValues = _.omitBy(columnValues, _.isNil)
   const keys = Object.keys(normalizedColumnValues)
   const values = _.fill(Array(keys.length), '?')
 
-  const insertRecordStmt = await prepare(connection, `insert into ${tableName} (${keys.join(', ')}) values (${values.join(', ')})`)
+  const insertRecordStmt = await prepare(
+    connection,
+    `insert into ${tableName} (${keys.join(', ')}) values (${values.join(', ')})`
+  )
 
   await insertRecordStmt.executeAsync(Object.values(normalizedColumnValues))
 }
@@ -61,13 +66,16 @@ async function insertRecord (connection, tableName, columnValues) {
  * @param {Object} columnValues the column key-value map
  * @param {Object} whereConditions the where clause condition map
  */
-async function updateRecord (connection, tableName, columnValues, whereConditions) {
+async function updateRecord(connection, tableName, columnValues, whereConditions) {
   let keys = Object.keys(columnValues)
-  keys = _.map(keys, k => `${k} = ?`)
+  keys = _.map(keys, (k) => `${k} = ?`)
   let conditions = Object.keys(whereConditions)
-  conditions = _.map(conditions, c => `${c} = ?`)
+  conditions = _.map(conditions, (c) => `${c} = ?`)
 
-  const updateRecordStmt = await prepare(connection, `update ${tableName} set ${keys.join(', ')} where (${conditions.join(' and ')})`)
+  const updateRecordStmt = await prepare(
+    connection,
+    `update ${tableName} set ${keys.join(', ')} where (${conditions.join(' and ')})`
+  )
 
   await updateRecordStmt.executeAsync([...Object.values(columnValues), ...Object.values(whereConditions)])
 }
@@ -80,7 +88,7 @@ async function updateRecord (connection, tableName, columnValues, whereCondition
  *
  * @returns {Number} round id
  */
-async function getMMRoundId (connection, challengeId) {
+async function getMMRoundId(connection, challengeId) {
   const result = await connection.queryAsync(util.format(GET_MMCHALLENGE_ROUND_ID_QUERY, challengeId))
   if (result.length === 0) {
     return null
@@ -97,7 +105,7 @@ async function getMMRoundId (connection, challengeId) {
  *
  * @returns {Number} component id
  */
-async function getComponentId (connection, roundId) {
+async function getComponentId(connection, roundId) {
   const result = await connection.queryAsync(util.format(GET_COMPONENT_ID_QUERY, roundId))
   if (result.length === 0) {
     throw new Error('Fail to fetch component id from database.')
@@ -114,7 +122,7 @@ async function getComponentId (connection, roundId) {
  *
  * @returns {Number} rated index
  */
-async function getRatedInd (connection, roundId) {
+async function getRatedInd(connection, roundId) {
   const result = await connection.queryAsync(util.format(GET_RATED_IND_QUERY, roundId))
   if (result.length === 0) {
     throw new Error('Fail to fetch rated index from database.')
@@ -132,7 +140,7 @@ async function getRatedInd (connection, roundId) {
  *
  * @returns {Object} long component state detail
  */
-async function getLongComponentStateDetail (connection, roundId, memberId) {
+async function getLongComponentStateDetail(connection, roundId, memberId) {
   const result = await connection.queryAsync(util.format(GET_LONG_COMPONENT_STATE_QUERY, roundId, memberId))
   if (result.length === 0) {
     throw new Error('Fail to fetch long component state detail from database.')
@@ -152,7 +160,7 @@ async function getLongComponentStateDetail (connection, roundId, memberId) {
  *
  * @returns {Number} submission initials core
  */
-async function getSubmissionInitialScore (connection, submissionId) {
+async function getSubmissionInitialScore(connection, submissionId) {
   const result = await connection.queryAsync(util.format(GET_SUBMISSION_INITIAL_SCORE_QUERY, submissionId))
   if (result.length === 0) {
     throw new Error('Fail to fetch submission initial score from database.')
@@ -169,7 +177,7 @@ async function getSubmissionInitialScore (connection, submissionId) {
  *
  * @returns {Array} mm challenge result
  */
-async function getMMResult (connection, roundId) {
+async function getMMResult(connection, roundId) {
   const queryResult = await connection.queryAsync(util.format(GET_MM_RESULT_QUERY, roundId))
   const result = []
   for (const element of queryResult) {
@@ -190,7 +198,7 @@ async function getMMResult (connection, roundId) {
  *
  * @returns {Object} user MM rating
  */
-async function getUserMMRating (connection, coderId) {
+async function getUserMMRating(connection, coderId) {
   const queryResult = await connection.queryAsync(util.format(GET_USER_MM_RATING_QUERY, coderId))
   const result = {
     rating: 0,
