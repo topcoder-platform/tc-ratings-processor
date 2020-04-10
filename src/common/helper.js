@@ -11,8 +11,17 @@ const pool = Promise.promisifyAll(new Pool())
 pool.setMaxPoolSize(config.get('INFORMIX.POOL_MAX_SIZE'))
 
 const submissionApi = require('@topcoder-platform/topcoder-submission-api-wrapper')
-const submissionApiClient = submissionApi(_.pick(config, [
-  'AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'SUBMISSION_API_URL', 'AUTH0_PROXY_SERVER_URL']))
+const submissionApiClient = submissionApi(
+  _.pick(config, [
+    'AUTH0_URL',
+    'AUTH0_AUDIENCE',
+    'TOKEN_CACHE_TIME',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'SUBMISSION_API_URL',
+    'AUTH0_PROXY_SERVER_URL'
+  ])
+)
 
 // review type to be ignored
 const ignoredReviewTypeIds = []
@@ -21,16 +30,25 @@ const ignoredReviewTypeIds = []
  * Get Informix connection using the configured parameters
  * @return {Object} Informix connection
  */
-async function getInformixConnection () {
+async function getInformixConnection() {
   // construct the connection string from the configuration parameters.
-  const connectionString = 'SERVER=' + config.get('INFORMIX.SERVER') +
-                           ';DATABASE=' + config.get('INFORMIX.DATABASE') +
-                           ';HOST=' + config.get('INFORMIX.HOST') +
-                           ';Protocol=' + config.get('INFORMIX.PROTOCOL') +
-                           ';SERVICE=' + config.get('INFORMIX.PORT') +
-                           ';DB_LOCALE=' + config.get('INFORMIX.DB_LOCALE') +
-                           ';UID=' + config.get('INFORMIX.USER') +
-                           ';PWD=' + config.get('INFORMIX.PASSWORD')
+  const connectionString =
+    'SERVER=' +
+    config.get('INFORMIX.SERVER') +
+    ';DATABASE=' +
+    config.get('INFORMIX.DATABASE') +
+    ';HOST=' +
+    config.get('INFORMIX.HOST') +
+    ';Protocol=' +
+    config.get('INFORMIX.PROTOCOL') +
+    ';SERVICE=' +
+    config.get('INFORMIX.PORT') +
+    ';DB_LOCALE=' +
+    config.get('INFORMIX.DB_LOCALE') +
+    ';UID=' +
+    config.get('INFORMIX.USER') +
+    ';PWD=' +
+    config.get('INFORMIX.PASSWORD')
   const conn = await pool.openAsync(connectionString)
   return Promise.promisifyAll(conn)
 }
@@ -39,7 +57,7 @@ async function getInformixConnection () {
  * Get Kafka options
  * @return {Object} the Kafka options
  */
-function getKafkaOptions () {
+function getKafkaOptions() {
   const options = { connectionString: config.KAFKA_URL, groupId: config.KAFKA_GROUP_ID }
   if (config.KAFKA_CLIENT_CERT && config.KAFKA_CLIENT_CERT_KEY) {
     options.ssl = { cert: config.KAFKA_CLIENT_CERT, key: config.KAFKA_CLIENT_CERT_KEY }
@@ -51,14 +69,14 @@ function getKafkaOptions () {
  * Get ignored review type ids
  * @returns {Array} the ignored review type ids
  */
-function getIgnoredReviewTypeIds () {
+function getIgnoredReviewTypeIds() {
   return ignoredReviewTypeIds
 }
 
 /**
  * Fetch ignore review types
  */
-async function fetchIgnoredReviewTypes () {
+async function fetchIgnoredReviewTypes() {
   const names = JSON.parse(config.IGNORED_REVIEW_TYPES)
   for (const name of names) {
     const query = {

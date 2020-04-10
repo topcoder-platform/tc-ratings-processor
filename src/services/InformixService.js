@@ -10,13 +10,13 @@ const GET_MMCHALLENGE_ROUND_ID_QUERY =
   'select value from tcs_catalog:project_info where project_info_type_id = 56 and project_id = %d'
 
 // The query to get component id
-const GET_COMPONENT_ID_QUERY = 'select component_id from round_component where round_id = %d'
+const GET_COMPONENT_ID_QUERY = 'select component_id from informixoltp:round_component where round_id = %d'
 
 // The query to get rated index
-const GET_RATED_IND_QUERY = 'select rated_ind from round where round_id = %d'
+const GET_RATED_IND_QUERY = 'select rated_ind from informixoltp:round where round_id = %d'
 
 // The query to get long component state detail
-const GET_LONG_COMPONENT_STATE_QUERY = `select long_component_state_id, submission_number
+const GET_LONG_COMPONENT_STATE_QUERY = `select informixoltp:long_component_state_id, submission_number
   from long_component_state where round_id = %d and coder_id = %d`
 
 // The query to get submission initial score
@@ -24,10 +24,10 @@ const GET_SUBMISSION_INITIAL_SCORE_QUERY = 'select initial_score from tcs_catalo
 
 // The query to get mm challenge result
 const GET_MM_RESULT_QUERY =
-  'select system_point_total as point, coder_id, attended from long_comp_result where round_id = %d'
+  'select system_point_total as point, coder_id, attended from informixoltp:long_comp_result where round_id = %d'
 
 // The query to get user mm rating
-const GET_USER_MM_RATING_QUERY = 'select rating, vol from algo_rating where coder_id = %d and algo_rating_type_id = 3'
+const GET_USER_MM_RATING_QUERY = 'select rating, vol from informixoltp:algo_rating where coder_id = %d and algo_rating_type_id = 3'
 
 /**
  * Prepare Informix statement

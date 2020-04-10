@@ -52,7 +52,7 @@ async function processRegistration(payload) {
 
       const componentId = await InformixService.getComponentId(connection, roundId)
 
-      await InformixService.insertRecord(connection, 'long_component_state', {
+      await InformixService.insertRecord(connection, 'informixoltp:long_component_state', {
         long_component_state_id: longComponentStateId,
         round_id: roundId,
         coder_id: payload.data.userId,
@@ -64,7 +64,7 @@ async function processRegistration(payload) {
 
       const ratedInd = await InformixService.getRatedInd(connection, roundId)
 
-      await InformixService.insertRecord(connection, 'long_comp_result', {
+      await InformixService.insertRecord(connection, 'informixoltp:long_comp_result', {
         coder_id: payload.data.userId,
         round_id: roundId,
         attended: 'N',
@@ -146,7 +146,7 @@ async function processReview(payload) {
         memberId
       )
 
-      await InformixService.insertRecord(connection, 'long_submission', {
+      await InformixService.insertRecord(connection, 'informixoltp:long_submission', {
         long_component_state_id: longComponentStateId,
         submission_number: submissionNumber + 1,
         example: 0,
@@ -158,7 +158,7 @@ async function processReview(payload) {
 
       await InformixService.updateRecord(
         connection,
-        'long_component_state',
+        'informixoltp:long_component_state',
         {
           points: payload.score,
           submission_number: submissionNumber + 1
@@ -232,7 +232,7 @@ async function processReviewSummation(payload) {
 
       await InformixService.updateRecord(
         connection,
-        'long_comp_result',
+        'informixoltp:long_comp_result',
         {
           system_point_total: payload.aggregateScore,
           point_total: initialScore,
@@ -297,7 +297,7 @@ async function processReviewEnd(payload) {
 
           await InformixService.updateRecord(
             connection,
-            'long_comp_result',
+            'informixoltp:long_comp_result',
             {
               placed: result[i].placed,
               old_rating: rating,
