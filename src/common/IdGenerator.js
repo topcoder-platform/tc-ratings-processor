@@ -15,7 +15,7 @@ class IDGenerator {
    * @param {Informix} db database
    * @param {String} seqName sequence name
    */
-  constructor (seqName) {
+  constructor(seqName) {
     this.seqName = seqName
     this._availableId = 0
     this.mutex = new Mutex()
@@ -25,7 +25,7 @@ class IDGenerator {
    * Get next id
    * @returns {Number} next id
    */
-  async getNextId () {
+  async getNextId() {
     const release = await this.mutex.acquire()
     try {
       logger.debug('Getting nextId')
@@ -68,9 +68,11 @@ class IDGenerator {
    * @returns {Array} [nextId, availableId]
    * @private
    */
-  async getNextBlock (connection) {
+  async getNextBlock(connection) {
     try {
-      const result = await connection.queryAsync(`select next_block_start, block_size from common_oltp:id_sequences where name = '${this.seqName}'`)
+      const result = await connection.queryAsync(
+        `select next_block_start, block_size from common_oltp:id_sequences where name = '${this.seqName}'`
+      )
       if (result.length > 0) {
         return [Number(result[0].next_block_start) - 1, Number(result[0].block_size)]
       } else {
@@ -88,9 +90,11 @@ class IDGenerator {
    * @param {Number} nextStart next start id
    * @private
    */
-  async updateNextBlock (connection, nextStart) {
+  async updateNextBlock(connection, nextStart) {
     try {
-      await connection.queryAsync(`update common_oltp:id_sequences set next_block_start = ${nextStart} where name = '${this.seqName}'`)
+      await connection.queryAsync(
+        `update common_oltp:id_sequences set next_block_start = ${nextStart} where name = '${this.seqName}'`
+      )
     } catch (e) {
       logger.error('Failed to update id sequence: ' + this.seqName)
       logger.error(util.inspect(e))

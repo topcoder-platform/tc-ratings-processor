@@ -7,14 +7,14 @@ RUN mkdir /app
 WORKDIR /home/informix
 
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    echo "deb http://ftp.debian.org/debian/ stretch main non-free contrib" >/etc/apt/sources.list && \
-    echo "deb http://security.debian.org/ stretch/updates main contrib non-free" >>/etc/apt/sources.list
+  echo "deb http://ftp.debian.org/debian/ stretch main non-free contrib" >/etc/apt/sources.list && \
+  echo "deb http://security.debian.org/ stretch/updates main contrib non-free" >>/etc/apt/sources.list
 
 RUN apt-get -qq update && \
-    apt-get -qq install -y wget gcc-6 g++-6 make xz-utils python2.7 git curl
+  apt-get -qq install -y wget gcc-6 g++-6 make xz-utils python2.7 git curl
 
 RUN wget -q -O node10.tar.xz https://nodejs.org/dist/v10.15.1/node-v10.15.1-linux-x64.tar.xz \
-   && tar xfJ node10.tar.xz && rm -rf node10.tar.xz
+  && tar xfJ node10.tar.xz && rm -rf node10.tar.xz
 
 ENV SERVERNAME=$servername
 

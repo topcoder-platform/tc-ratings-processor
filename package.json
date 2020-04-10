@@ -12,6 +12,7 @@
   "author": "TCSCODER",
   "license": "none",
   "devDependencies": {
+    "pm2": "^4.2.3",
     "standard": "^14.3.1"
   },
   "dependencies": {

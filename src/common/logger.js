@@ -1,4 +1,3 @@
-
 /**
  * This module contains the winston logger configuration.
  */
@@ -14,11 +13,7 @@ const logger = createLogger({
   level: config.LOG_LEVEL,
   transports: [
     new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.splat(),
-        format.simple()
-      )
+      format: format.combine(format.colorize(), format.splat(), format.simple())
     })
   ]
 })
@@ -51,12 +46,14 @@ logger.logFullError = (err, signature) => {
  */
 const _sanitizeObject = (obj) => {
   try {
-    return JSON.parse(JSON.stringify(obj, (name, value) => {
-      if (_.isArray(value) && value.length > 30) {
-        return `Array(${value.length})`
-      }
-      return value
-    }))
+    return JSON.parse(
+      JSON.stringify(obj, (name, value) => {
+        if (_.isArray(value) && value.length > 30) {
+          return `Array(${value.length})`
+        }
+        return value
+      })
+    )
   } catch (e) {
     return obj
   }
