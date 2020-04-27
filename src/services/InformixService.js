@@ -48,16 +48,20 @@ async function prepare(connection, sql) {
  * @param {Object} columnValues the column key-value map
  */
 async function insertRecord(connection, tableName, columnValues) {
-  const normalizedColumnValues = _.omitBy(columnValues, _.isNil)
-  const keys = Object.keys(normalizedColumnValues)
-  const values = _.fill(Array(keys.length), '?')
+  try {
+    const normalizedColumnValues = _.omitBy(columnValues, _.isNil)
+    const keys = Object.keys(normalizedColumnValues)
+    const values = _.fill(Array(keys.length), '?')
 
-  const insertRecordStmt = await prepare(
-    connection,
-    `insert into ${tableName} (${keys.join(', ')}) values (${values.join(', ')})`
-  )
+    const insertRecordStmt = await prepare(
+      connection,
+      `insert into ${tableName} (${keys.join(', ')}) values (${values.join(', ')})`
+    )
 
-  await insertRecordStmt.executeAsync(Object.values(normalizedColumnValues))
+    await insertRecordStmt.executeAsync(Object.values(normalizedColumnValues))
+  } catch (e) {
+    throw e
+  }
 }
 
 /**
@@ -68,17 +72,21 @@ async function insertRecord(connection, tableName, columnValues) {
  * @param {Object} whereConditions the where clause condition map
  */
 async function updateRecord(connection, tableName, columnValues, whereConditions) {
-  let keys = Object.keys(columnValues)
-  keys = _.map(keys, (k) => `${k} = ?`)
-  let conditions = Object.keys(whereConditions)
-  conditions = _.map(conditions, (c) => `${c} = ?`)
+  try {
+    let keys = Object.keys(columnValues)
+    keys = _.map(keys, (k) => `${k} = ?`)
+    let conditions = Object.keys(whereConditions)
+    conditions = _.map(conditions, (c) => `${c} = ?`)
 
-  const updateRecordStmt = await prepare(
-    connection,
-    `update ${tableName} set ${keys.join(', ')} where (${conditions.join(' and ')})`
-  )
+    const updateRecordStmt = await prepare(
+      connection,
+      `update ${tableName} set ${keys.join(', ')} where (${conditions.join(' and ')})`
+    )
 
-  await updateRecordStmt.executeAsync([...Object.values(columnValues), ...Object.values(whereConditions)])
+    await updateRecordStmt.executeAsync([...Object.values(columnValues), ...Object.values(whereConditions)])
+  } catch (e) {
+    throw e
+  }
 }
 
 /**
@@ -90,11 +98,15 @@ async function updateRecord(connection, tableName, columnValues, whereConditions
  * @returns {Number} round id
  */
 async function getMMRoundId(connection, challengeId) {
-  const result = await connection.queryAsync(util.format(GET_MMCHALLENGE_ROUND_ID_QUERY, Number(challengeId)))
-  if (result.length === 0) {
-    return null
-  } else {
-    return Number(result[0].value)
+  try {
+    const result = await connection.queryAsync(util.format(GET_MMCHALLENGE_ROUND_ID_QUERY, Number(challengeId)))
+    if (result.length === 0) {
+      return null
+    } else {
+      return Number(result[0].value)
+    }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -107,11 +119,15 @@ async function getMMRoundId(connection, challengeId) {
  * @returns {Number} component id
  */
 async function getComponentId(connection, roundId) {
-  const result = await connection.queryAsync(util.format(GET_COMPONENT_ID_QUERY, roundId))
-  if (result.length === 0) {
-    throw new Error('Fail to fetch component id from database.')
-  } else {
-    return Number(result[0].component_id)
+  try {
+    const result = await connection.queryAsync(util.format(GET_COMPONENT_ID_QUERY, roundId))
+    if (result.length === 0) {
+      throw new Error('Fail to fetch component id from database.')
+    } else {
+      return Number(result[0].component_id)
+    }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -124,11 +140,15 @@ async function getComponentId(connection, roundId) {
  * @returns {Number} rated index
  */
 async function getRatedInd(connection, roundId) {
-  const result = await connection.queryAsync(util.format(GET_RATED_IND_QUERY, roundId))
-  if (result.length === 0) {
-    throw new Error('Fail to fetch rated index from database.')
-  } else {
-    return Number(result[0].rated_ind)
+  try {
+    const result = await connection.queryAsync(util.format(GET_RATED_IND_QUERY, roundId))
+    if (result.length === 0) {
+      throw new Error('Fail to fetch rated index from database.')
+    } else {
+      return Number(result[0].rated_ind)
+    }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -142,14 +162,18 @@ async function getRatedInd(connection, roundId) {
  * @returns {Object} long component state detail
  */
 async function getLongComponentStateDetail(connection, roundId, memberId) {
-  const result = await connection.queryAsync(util.format(GET_LONG_COMPONENT_STATE_QUERY, roundId, memberId))
-  if (result.length === 0) {
-    throw new Error('Fail to fetch long component state detail from database.')
-  } else {
-    return {
-      longComponentStateId: Number(result[0].long_component_state_id),
-      submissionNumber: Number(result[0].submission_number)
+  try {
+    const result = await connection.queryAsync(util.format(GET_LONG_COMPONENT_STATE_QUERY, roundId, memberId))
+    if (result.length === 0) {
+      throw new Error('Fail to fetch long component state detail from database.')
+    } else {
+      return {
+        longComponentStateId: Number(result[0].long_component_state_id),
+        submissionNumber: Number(result[0].submission_number)
+      }
     }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -162,11 +186,15 @@ async function getLongComponentStateDetail(connection, roundId, memberId) {
  * @returns {Number} submission initials core
  */
 async function getSubmissionInitialScore(connection, submissionId) {
-  const result = await connection.queryAsync(util.format(GET_SUBMISSION_INITIAL_SCORE_QUERY, submissionId))
-  if (result.length === 0) {
-    throw new Error('Fail to fetch submission initial score from database.')
-  } else {
-    return Number(result[0].initial_score)
+  try {
+    const result = await connection.queryAsync(util.format(GET_SUBMISSION_INITIAL_SCORE_QUERY, submissionId))
+    if (result.length === 0) {
+      throw new Error('Fail to fetch submission initial score from database.')
+    } else {
+      return Number(result[0].initial_score)
+    }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -179,16 +207,20 @@ async function getSubmissionInitialScore(connection, submissionId) {
  * @returns {Array} mm challenge result
  */
 async function getMMResult(connection, roundId) {
-  const queryResult = await connection.queryAsync(util.format(GET_MM_RESULT_QUERY, roundId))
-  const result = []
-  for (const element of queryResult) {
-    if (element.attended === 'N') {
-      result.push({ point: 0, coderId: Number(element.coder_id) })
-    } else {
-      result.push({ point: Number(element.point), coderId: Number(element.coder_id) })
+  try {
+    const queryResult = await connection.queryAsync(util.format(GET_MM_RESULT_QUERY, roundId))
+    const result = []
+    for (const element of queryResult) {
+      if (element.attended === 'N') {
+        result.push({ point: 0, coderId: Number(element.coder_id) })
+      } else {
+        result.push({ point: Number(element.point), coderId: Number(element.coder_id) })
+      }
     }
+    return result
+  } catch (e) {
+    throw e
   }
-  return result
 }
 
 /**
@@ -200,16 +232,20 @@ async function getMMResult(connection, roundId) {
  * @returns {Object} user MM rating
  */
 async function getUserMMRating(connection, coderId) {
-  const queryResult = await connection.queryAsync(util.format(GET_USER_MM_RATING_QUERY, coderId))
-  const result = {
-    rating: 0,
-    vol: 0
+  try {
+    const queryResult = await connection.queryAsync(util.format(GET_USER_MM_RATING_QUERY, coderId))
+    const result = {
+      rating: 0,
+      vol: 0
+    }
+    if (queryResult.length !== 0) {
+      result.rating = Number(queryResult[0].rating)
+      result.vol = Number(queryResult[0].vol)
+    }
+    return result
+  } catch (e) {
+    throw e
   }
-  if (queryResult.length !== 0) {
-    result.rating = Number(queryResult[0].rating)
-    result.vol = Number(queryResult[0].vol)
-  }
-  return result
 }
 
 module.exports = {

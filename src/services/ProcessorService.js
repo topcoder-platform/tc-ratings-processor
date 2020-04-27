@@ -142,6 +142,8 @@ async function processReview(payload) {
 
   try {
     const roundId = await InformixService.getMMRoundId(connection, challengeId)
+    console.debug(`roundId = ${roundId}`)
+
     if (roundId) {
       const { longComponentStateId, submissionNumber } = await InformixService.getLongComponentStateDetail(
         connection,
