@@ -120,7 +120,7 @@ async function getMMRoundId(connection, challengeId) {
  */
 async function getComponentId(connection, roundId) {
   try {
-    const result = await connection.queryAsync(util.format(GET_COMPONENT_ID_QUERY, roundId))
+    const result = await connection.queryAsync(util.format(GET_COMPONENT_ID_QUERY, Number(roundId)))
     if (result.length === 0) {
       throw new Error('Fail to fetch component id from database.')
     } else {
@@ -141,7 +141,7 @@ async function getComponentId(connection, roundId) {
  */
 async function getRatedInd(connection, roundId) {
   try {
-    const result = await connection.queryAsync(util.format(GET_RATED_IND_QUERY, roundId))
+    const result = await connection.queryAsync(util.format(GET_RATED_IND_QUERY, Number(roundId)))
     if (result.length === 0) {
       throw new Error('Fail to fetch rated index from database.')
     } else {
@@ -163,7 +163,9 @@ async function getRatedInd(connection, roundId) {
  */
 async function getLongComponentStateDetail(connection, roundId, memberId) {
   try {
-    const result = await connection.queryAsync(util.format(GET_LONG_COMPONENT_STATE_QUERY, roundId, memberId))
+    const result = await connection.queryAsync(
+      util.format(GET_LONG_COMPONENT_STATE_QUERY, Number(roundId), Number(memberId))
+    )
     if (result.length === 0) {
       throw new Error('Fail to fetch long component state detail from database.')
     } else {
@@ -187,7 +189,7 @@ async function getLongComponentStateDetail(connection, roundId, memberId) {
  */
 async function getSubmissionInitialScore(connection, submissionId) {
   try {
-    const result = await connection.queryAsync(util.format(GET_SUBMISSION_INITIAL_SCORE_QUERY, submissionId))
+    const result = await connection.queryAsync(util.format(GET_SUBMISSION_INITIAL_SCORE_QUERY, Number(submissionId)))
     if (result.length === 0) {
       throw new Error('Fail to fetch submission initial score from database.')
     } else {
@@ -208,7 +210,7 @@ async function getSubmissionInitialScore(connection, submissionId) {
  */
 async function getMMResult(connection, roundId) {
   try {
-    const queryResult = await connection.queryAsync(util.format(GET_MM_RESULT_QUERY, roundId))
+    const queryResult = await connection.queryAsync(util.format(GET_MM_RESULT_QUERY, Number(roundId)))
     const result = []
     for (const element of queryResult) {
       if (element.attended === 'N') {
@@ -233,7 +235,7 @@ async function getMMResult(connection, roundId) {
  */
 async function getUserMMRating(connection, coderId) {
   try {
-    const queryResult = await connection.queryAsync(util.format(GET_USER_MM_RATING_QUERY, coderId))
+    const queryResult = await connection.queryAsync(util.format(GET_USER_MM_RATING_QUERY, Number(coderId)))
     const result = {
       rating: 0,
       vol: 0

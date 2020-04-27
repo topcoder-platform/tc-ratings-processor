@@ -150,6 +150,7 @@ async function processReview(payload) {
         roundId,
         memberId
       )
+      console.debug(`longComponentStateId - ${longComponentStateId}, submissionNumber - ${submissionNumber}`)
 
       await InformixService.insertRecord(connection, 'informixoltp:long_submission', {
         long_component_state_id: longComponentStateId,
