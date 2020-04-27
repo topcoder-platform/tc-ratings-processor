@@ -47,7 +47,9 @@ async function processRegistration(payload) {
 
     if (roundId) {
       logger.debug('Getting longComponentStateId')
+
       const longComponentStateId = await idGen.getNextId()
+
       logger.debug(`longComponentStateId = ${longComponentStateId}`)
 
       const componentId = await InformixService.getComponentId(connection, roundId)
@@ -81,6 +83,7 @@ async function processRegistration(payload) {
     }
   } catch (e) {
     logger.error('Error in processing Marathon Match registration event.')
+    logger.error(e)
     await connection.rollbackTransactionAsync()
     throw e
   } finally {
@@ -176,6 +179,7 @@ async function processReview(payload) {
     }
   } catch (e) {
     logger.error('Error in processing Marathon Match review event.')
+    logger.error(e)
     await connection.rollbackTransactionAsync()
     throw e
   } finally {
@@ -252,6 +256,7 @@ async function processReviewSummation(payload) {
     }
   } catch (e) {
     logger.error('Error in processing Marathon Match review summation event.')
+    logger.error(e)
     await connection.rollbackTransactionAsync()
     throw e
   } finally {
@@ -318,6 +323,7 @@ async function processReviewEnd(payload) {
       }
     } catch (e) {
       logger.error('Error in processing Marathon Match review end event.')
+      logger.error(e)
       await connection.rollbackTransactionAsync()
       throw e
     } finally {

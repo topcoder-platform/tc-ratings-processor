@@ -27,7 +27,8 @@ const GET_MM_RESULT_QUERY =
   'select system_point_total as point, coder_id, attended from informixoltp:long_comp_result where round_id = %d'
 
 // The query to get user mm rating
-const GET_USER_MM_RATING_QUERY = 'select rating, vol from informixoltp:algo_rating where coder_id = %d and algo_rating_type_id = 3'
+const GET_USER_MM_RATING_QUERY =
+  'select rating, vol from informixoltp:algo_rating where coder_id = %d and algo_rating_type_id = 3'
 
 /**
  * Prepare Informix statement
