@@ -350,10 +350,12 @@ processReviewEnd.schema = {
  * @param {Object} message the kafka message
  */
 async function processMessage(message) {
+  logger.info(`Processing message - ${message}`)
   if (message.topic === config.CHALLENGE_NOTIFICATION_EVENTS_TOPIC) {
     if (message.payload.type === 'USER_REGISTRATION') {
       await this.processRegistration(message.payload)
     } else {
+      // TODO: USER_UNREGISTRATION - delete use from `long_comp_result` and `long_component_state`
       logger.info('Ignore this event, not user registration')
     }
   } else if (message.topic === config.SUBMISSION_NOTIFICATION_AGGREGATE_TOPIC) {

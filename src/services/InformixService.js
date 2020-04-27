@@ -90,7 +90,7 @@ async function updateRecord(connection, tableName, columnValues, whereConditions
  * @returns {Number} round id
  */
 async function getMMRoundId(connection, challengeId) {
-  const result = await connection.queryAsync(util.format(GET_MMCHALLENGE_ROUND_ID_QUERY, challengeId))
+  const result = await connection.queryAsync(util.format(GET_MMCHALLENGE_ROUND_ID_QUERY, Number(challengeId)))
   if (result.length === 0) {
     return null
   } else {
