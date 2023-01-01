@@ -19,7 +19,7 @@
     "@topcoder-platform/topcoder-submission-api-wrapper": "^1.2.0",
     "async-mutex": "^0.1.4",
     "bluebird": "^3.7.2",
-    "config": "^3.2.5",
+    "config": "^3.3.8",
     "get-parameter-names": "^0.3.0",
     "http-json-response": "^1.0.1",
     "ifxnjs": "^10.0.5",
